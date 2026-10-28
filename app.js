@@ -3,31 +3,43 @@ const products = [
   { id: 2, title: 'Монитор 27"',       category: 'Компьютеры', price: 28000 },
   { id: 3, title: 'Клавиатура',        category: 'Аксессуары', price: 6500 },
   { id: 4, title: 'Мышь беспроводная', category: 'Аксессуары', price: 2500 },
-  { id: 5, title: 'Микрофон', category: 'Аксессуары', price: 5000 },
-  { id: 6, title: 'Мышь проводная', category: 'Аксессуары', price: 1500 },
-  { id: 7, title: 'Наушники', category: 'Аксессуары', price: 5000 }
+  { id: 3, title: 'Наушники',        category: 'Аксессуары', price: 5000 },
+  { id: 3, title: 'Мышь проводная',        category: 'Аксессуары', price: 1500 }
 ];
+const cart = [];
 
 const catalog = document.getElementById('catalog');
+const cartCount = document.getElementById('cart-count');
+const cartSum = document.getElementById('cart-sum');
 
 function renderProducts() {
   catalog.innerHTML = products.map(p => `
     <div class="card">
       <div class="category">${p.category}</div>
       <h3>${p.title}</h3>
-      <div class="price">${p.price.toLocaleString('ru-RU')} ₽</div>
+      <div class="price">${Number(p.price).toLocaleString('ru-RU')} ₽</div>
       <button data-id="${p.id}">В корзину</button>
     </div>
   `).join('');
 }
 
+function renderCart() {
+  cartCount.textContent = cart.length;
+  cartSum.textContent = cart
+    .reduce((sum, p) => sum + Number(p.price), 0)
+    .toLocaleString('ru-RU');
+}
+
+catalog.addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  const product = products.find(p => p.id === Number(e.target.dataset.id));
+  cart.push(product);
+  renderCart();
+});
+
 renderProducts();
 
-catalog.addEventListener('click', function(event) {
-    if (event.target.tagName === 'BUTTON') {
-        const id = Number(event.target.dataset.id);
-        const product = products.find(p => p.id === id);
-
-        console.log(product.title);
-    }
+document.getElementById('clear-cart').addEventListener('click', () => {
+  cart.length = 0;
+  renderCart();
 });
